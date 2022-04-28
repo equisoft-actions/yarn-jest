@@ -35,6 +35,10 @@ inputs:
     description: Relative path under $GITHUB_WORKSPACE where the project is located.
     required: false
     default: "."
+  max-memory:
+    description: Max old space size (in megabytes)
+    required: false
+    default: 4096
 
 runs:
   using: composite
@@ -48,6 +52,8 @@ runs:
     - name: Run Jest
       shell: bash
       working-directory: ${{ steps.context.outputs.working-directory }}
+      env:
+        NODE_OPTIONS: "--max-old-space-size=${{ inputs.max-memory }}"
       run: yarn ${{ inputs.task-name }}
 
     - name: Upload report
