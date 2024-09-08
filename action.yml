@@ -54,6 +54,7 @@ runs:
       working-directory: ${{ steps.context.outputs.working-directory }}
       env:
         NODE_OPTIONS: "--max-old-space-size=${{ inputs.max-memory }}"
+        JEST_ENABLE_ANNOTATIONS: ${{ inputs.enable-annotations }}
       run: yarn ${{ inputs.task-name }}
 
     - name: Upload report
@@ -73,12 +74,3 @@ runs:
         retention-days: ${{ inputs.report-retention-days }}
         if-no-files-found: error
         path: ${{ steps.context.outputs.working-directory }}/build/jest/coverage/clover.xml
-
-    - name: Create annotations
-      if: "!cancelled() && inputs.enable-annotations == 'true' && github.actor != 'dependabot[bot]'"
-      uses: IgnusG/jest-report-action@v2.3.3
-      with:
-        check-name: Jest Report Analysis
-        access-token: ${{ github.token }}
-        junit-file: build/jest/junit.xml
-        working-directory: ${{ steps.context.outputs.working-directory }}
