@@ -47,6 +47,11 @@ runs:
       shell: bash
       id: context
       run: |
+        JUNIT_REPORT=false
+        if [ -f ${{ inputs.working-directory }}/build/jest/junit.xml ]; then
+          JUNIT_REPORT=true
+        fi
+        echo "has-junit-report=${JUNIT_REPORT}" >> $GITHUB_OUTPUT
         echo "working-directory=$(realpath ${{ inputs.working-directory }})" >> $GITHUB_OUTPUT
 
     - name: Run Jest
@@ -59,7 +64,7 @@ runs:
 
     - name: Upload report
       uses: actions/upload-artifact@v4
-      if: "!cancelled()"
+      if: "!cancelled() && steps.context.outputs.has-junit-report == 'true'"
       with:
         name: ${{ inputs.report-name }}
         retention-days: ${{ inputs.report-retention-days }}
